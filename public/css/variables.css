@@ -1,0 +1,124 @@
+/* ============================================
+   DESIGN TOKENS – Restaurant Reservation System
+   ============================================ */
+
+:root {
+  /* ── Color Palette ── */
+  /* Primary: Rich Gold */
+  --color-primary: #D4A853;
+  --color-primary-light: #E8C97A;
+  --color-primary-dark: #B8902F;
+  --color-primary-glow: rgba(212, 168, 83, 0.25);
+
+  /* Backgrounds: Deep Dark */
+  --color-bg-primary: #0D0D0D;
+  --color-bg-secondary: #161616;
+  --color-bg-tertiary: #1E1E1E;
+  --color-bg-card: #1A1A1A;
+  --color-bg-elevated: #222222;
+  --color-bg-glass: rgba(30, 30, 30, 0.85);
+  --color-bg-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Text */
+  --color-text-primary: #F5F0E8;
+  --color-text-secondary: #A8A095;
+  --color-text-muted: #6B6560;
+  --color-text-inverse: #0D0D0D;
+
+  /* Status Colors */
+  --color-success: #4CAF50;
+  --color-success-bg: rgba(76, 175, 80, 0.12);
+  --color-warning: #FF9800;
+  --color-warning-bg: rgba(255, 152, 0, 0.12);
+  --color-error: #EF5350;
+  --color-error-bg: rgba(239, 83, 80, 0.12);
+  --color-info: #42A5F5;
+  --color-info-bg: rgba(66, 165, 245, 0.12);
+
+  /* Table Status Colors */
+  --color-table-available: #4CAF50;
+  --color-table-reserved: #FF9800;
+  --color-table-occupied: #EF5350;
+  --color-table-cleaning: #42A5F5;
+
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-light: rgba(255, 255, 255, 0.1);
+  --color-border-focus: var(--color-primary);
+
+  /* ── Typography ── */
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --fs-xs: 0.75rem;    /* 12px */
+  --fs-sm: 0.8125rem;  /* 13px */
+  --fs-base: 0.9375rem;/* 15px */
+  --fs-md: 1rem;       /* 16px */
+  --fs-lg: 1.125rem;   /* 18px */
+  --fs-xl: 1.375rem;   /* 22px */
+  --fs-2xl: 1.75rem;   /* 28px */
+  --fs-3xl: 2.25rem;   /* 36px */
+  --fs-4xl: 3rem;      /* 48px */
+  --fs-5xl: 4rem;      /* 64px */
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  --lh-tight: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.7;
+
+  /* ── Spacing ── */
+  --sp-1: 0.25rem;   /* 4px */
+  --sp-2: 0.5rem;    /* 8px */
+  --sp-3: 0.75rem;   /* 12px */
+  --sp-4: 1rem;      /* 16px */
+  --sp-5: 1.25rem;   /* 20px */
+  --sp-6: 1.5rem;    /* 24px */
+  --sp-8: 2rem;      /* 32px */
+  --sp-10: 2.5rem;   /* 40px */
+  --sp-12: 3rem;     /* 48px */
+  --sp-16: 4rem;     /* 64px */
+  --sp-20: 5rem;     /* 80px */
+  --sp-24: 6rem;     /* 96px */
+
+  /* ── Border Radius ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px var(--color-primary-glow);
+  --shadow-glow-lg: 0 0 40px var(--color-primary-glow);
+
+  /* ── Transitions ── */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Z-Index Scale ── */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* ── Layout ── */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+  --max-content-width: 1200px;
+  --floor-map-size: 600px;
+}

@@ -1,0 +1,460 @@
+/* ============================================
+   CUSTOMER-FACING PAGES
+   ============================================ */
+
+/* ── Hero Section ── */
+.hero {
+    position: relative;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--sp-8);
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 30%, rgba(212, 168, 83, 0.08) 0%, transparent 60%),
+        var(--color-bg-primary);
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 20%, rgba(212, 168, 83, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 70% 80%, rgba(212, 168, 83, 0.03) 0%, transparent 40%);
+    animation: float 20s ease-in-out infinite;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-4);
+    background: var(--color-primary-glow);
+    border: 1px solid rgba(212, 168, 83, 0.3);
+    border-radius: var(--radius-full);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--sp-6);
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: var(--fw-bold);
+    line-height: 1.1;
+    margin-bottom: var(--sp-6);
+    background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 50%, var(--color-text-primary) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 6s linear infinite;
+}
+
+.hero-subtitle {
+    font-size: var(--fs-lg);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--sp-10);
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-actions {
+    display: flex;
+    gap: var(--sp-4);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ── Info Cards Row ── */
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--sp-6);
+    padding: var(--sp-12) var(--sp-8);
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+}
+
+.info-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--sp-8);
+    text-align: center;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-border-light);
+    box-shadow: var(--shadow-lg);
+}
+
+.info-card:hover::before {
+    opacity: 1;
+}
+
+.info-card-icon {
+    font-size: 2rem;
+    margin-bottom: var(--sp-4);
+}
+
+.info-card h4 {
+    font-family: var(--font-heading);
+    margin-bottom: var(--sp-3);
+}
+
+.info-card p {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+}
+
+/* ── Reservation Form Page ── */
+.reservation-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--sp-8);
+}
+
+.reservation-page h2 {
+    text-align: center;
+    margin-bottom: var(--sp-2);
+}
+
+.reservation-page .subtitle {
+    text-align: center;
+    color: var(--color-text-muted);
+    margin-bottom: var(--sp-10);
+}
+
+/* Step Progress */
+.step-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-10);
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+}
+
+.step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-muted);
+    border: 2px solid var(--color-border);
+    transition: all var(--transition-base);
+}
+
+.step.active .step-circle {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.step.completed .step-circle {
+    background: var(--color-success);
+    border-color: var(--color-success);
+    color: white;
+}
+
+.step-label {
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+    font-weight: var(--fw-medium);
+}
+
+.step.active .step-label {
+    color: var(--color-primary);
+}
+
+.step.completed .step-label {
+    color: var(--color-success);
+}
+
+.step-line {
+    width: 60px;
+    height: 2px;
+    background: var(--color-border);
+}
+
+.step-line.active {
+    background: var(--color-primary);
+}
+
+/* Date/Time Selection */
+.datetime-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-6);
+    margin-bottom: var(--sp-6);
+}
+
+.party-size-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-6);
+}
+
+.party-size-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.party-size-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.party-size-btn.active {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+/* Time Slots */
+.time-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-6);
+}
+
+.time-slot {
+    padding: var(--sp-3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+}
+
+.time-slot:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.time-slot.active {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border-color: var(--color-primary);
+}
+
+.time-slot.unavailable {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Available Tables */
+.available-tables {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--sp-4);
+}
+
+.table-option {
+    padding: var(--sp-4);
+    background: var(--color-bg-secondary);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+.table-option:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.table-option.selected {
+    border-color: var(--color-primary);
+    background: var(--color-primary-glow);
+    box-shadow: var(--shadow-glow);
+}
+
+.table-option-number {
+    font-family: var(--font-heading);
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-bold);
+    margin-bottom: var(--sp-1);
+}
+
+.table-option-info {
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+}
+
+/* ── Confirmation Page ── */
+.confirmation-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--sp-8);
+    text-align: center;
+}
+
+.confirm-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--color-success-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--sp-6);
+    font-size: 2.5rem;
+    animation: scaleIn 0.5s ease;
+}
+
+.confirm-details {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--sp-6);
+    margin: var(--sp-6) 0;
+    text-align: left;
+}
+
+.confirm-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--sp-3) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.confirm-detail-row:last-child {
+    border-bottom: none;
+}
+
+.confirm-detail-label {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+}
+
+.confirm-detail-value {
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-sm);
+}
+
+/* ── My Reservations ── */
+.my-reservations-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--sp-8);
+}
+
+.reservation-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--sp-6);
+    margin-bottom: var(--sp-4);
+    transition: all var(--transition-base);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sp-4);
+}
+
+.reservation-card:hover {
+    border-color: var(--color-border-light);
+    box-shadow: var(--shadow-md);
+}
+
+.reservation-card-info h4 {
+    margin-bottom: var(--sp-1);
+}
+
+.reservation-card-meta {
+    display: flex;
+    gap: var(--sp-4);
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+}
+
+.reservation-card-actions {
+    display: flex;
+    gap: var(--sp-2);
+    flex-shrink: 0;
+}
+
+/* ── Customer Nav ── */
+.customer-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-4) var(--sp-8);
+    background: rgba(13, 13, 13, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--color-border);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+}
+
+.customer-main {
+    padding-top: var(--header-height);
+}

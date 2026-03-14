@@ -1,0 +1,65 @@
+const isProd = process.env.NODE_ENV === 'production';
+const { Pool } = require('pg');
+const Database = require('better-sqlite3');
+const path = require('path');
+
+let db;
+let pool;
+
+if (isProd) {
+    console.log('🐘 Connecting to PostgreSQL...');
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false } // Required for most cloud DBs like Supabase/Heroku
+    });
+
+    db = {
+        prepare: (sql) => ({
+            get: async (...params) => {
+                const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                return res.rows[0];
+            },
+            all: async (...params) => {
+                const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                return res.rows;
+            },
+            run: async (...params) => {
+                const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                return { lastInsertRowid: res.rows[0]?.id || null, changes: res.rowCount };
+            }
+        }),
+        exec: async (sql) => {
+            return await pool.query(sql);
+        },
+        transaction: (fn) => async (...args) => {
+            const client = await pool.connect();
+            try {
+                await client.query('BEGIN');
+                const result = await fn(client)(...args);
+                await client.query('COMMIT');
+                return result;
+            } catch (e) {
+                await client.query('ROLLBACK');
+                throw e;
+            } finally {
+                client.release();
+            }
+        }
+    };
+} else {
+    console.log('🐚 Connecting to SQLite...');
+    const sqlite = new Database(path.join(__dirname, '..', 'restaurant.db'));
+
+    // Wrapper to match PostgreSQL's async interface and some basic compatibility
+    db = {
+        prepare: (sql) => ({
+            get: async (...params) => sqlite.prepare(sql).get(...params),
+            all: async (...params) => sqlite.prepare(sql).all(...params),
+            run: async (...params) => sqlite.prepare(sql).run(...params)
+        }),
+        exec: async (sql) => sqlite.exec(sql),
+        transaction: (fn) => (...args) => sqlite.transaction(fn(...args))()
+    };
+}
+
+module.exports = db;

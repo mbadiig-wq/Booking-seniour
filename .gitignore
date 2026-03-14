@@ -1,0 +1,6 @@
+node_modules
+.env
+restaurant.db*
+.DS_Store
+dist
+build

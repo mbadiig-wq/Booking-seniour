@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+restaurant.db
+restaurant.db-journal
+.DS_Store
+.git
+.github
+.gemini
+.agent
+brain
+Dockerfile
+.dockerignore
+.env

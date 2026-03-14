@@ -1,0 +1,225 @@
+/* ============================================
+   ADMIN PANEL STYLES
+   ============================================ */
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-main {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: var(--sp-6);
+}
+
+/* ── Config Form ── */
+.config-section {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--sp-6);
+    margin-bottom: var(--sp-6);
+}
+
+.config-section h3 {
+    font-size: var(--fs-lg);
+    margin-bottom: var(--sp-4);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--sp-4);
+}
+
+.hours-grid {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr;
+    gap: var(--sp-3);
+    align-items: center;
+}
+
+.hours-day {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    text-transform: capitalize;
+}
+
+/* ── Table Editor ── */
+.table-editor {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: var(--sp-6);
+}
+
+.table-list {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.table-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-4) var(--sp-6);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.table-edit-row {
+    display: grid;
+    grid-template-columns: 60px 80px 100px 1fr 60px;
+    gap: var(--sp-3);
+    align-items: center;
+    padding: var(--sp-3) var(--sp-6);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.table-edit-row:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.add-table-form {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--sp-6);
+    height: fit-content;
+    position: sticky;
+    top: var(--sp-6);
+}
+
+/* ── Analytics ── */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--sp-6);
+}
+
+.chart-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--sp-6);
+}
+
+.chart-card h4 {
+    font-size: var(--fs-md);
+    margin-bottom: var(--sp-4);
+}
+
+.chart-container {
+    position: relative;
+    height: 200px;
+}
+
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--sp-1);
+    height: 100%;
+    padding-top: var(--sp-4);
+}
+
+.bar {
+    flex: 1;
+    background: linear-gradient(to top, var(--color-primary-dark), var(--color-primary));
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    min-height: 4px;
+    transition: height var(--transition-slow);
+    position: relative;
+    cursor: pointer;
+}
+
+.bar:hover {
+    opacity: 0.8;
+}
+
+.bar-label {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.bar-value {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: var(--fw-bold);
+    color: var(--color-primary);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.bar:hover .bar-value {
+    opacity: 1;
+}
+
+/* Simple donut chart */
+.donut-chart {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.donut-center {
+    width: 100px;
+    height: 100px;
+    background: var(--color-bg-card);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.donut-value {
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    font-family: var(--font-heading);
+}
+
+.donut-label {
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+}
+
+/* ── Trend stats ── */
+.trend-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+}
+
+.trend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-3);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.trend-item-label {
+    font-size: var(--fs-sm);
+    color: var(--color-text-secondary);
+}
+
+.trend-item-value {
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-sm);
+}
