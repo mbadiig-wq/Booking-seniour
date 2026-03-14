@@ -16,16 +16,31 @@ if (isProd) {
     db = {
         prepare: (sql) => ({
             get: async (...params) => {
-                const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
-                return res.rows[0];
+                try {
+                    const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                    return res.rows[0];
+                } catch (err) {
+                    console.error('❌ PG Query Error (get):', { sql, params, error: err.message });
+                    throw err;
+                }
             },
             all: async (...params) => {
-                const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
-                return res.rows;
+                try {
+                    const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                    return res.rows;
+                } catch (err) {
+                    console.error('❌ PG Query Error (all):', { sql, params, error: err.message });
+                    throw err;
+                }
             },
             run: async (...params) => {
-                const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
-                return { lastInsertRowid: res.rows[0]?.id || null, changes: res.rowCount };
+                try {
+                    const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                    return { lastInsertRowid: res.rows[0]?.id || null, changes: res.rowCount };
+                } catch (err) {
+                    console.error('❌ PG Query Error (run):', { sql, params, error: err.message });
+                    throw err;
+                }
             }
         }),
         exec: async (sql) => {

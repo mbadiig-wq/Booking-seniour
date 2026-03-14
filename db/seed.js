@@ -12,7 +12,7 @@ async function seedDatabase(db) {
     // ── Restaurant Info ──
     await db.prepare(`
       INSERT INTO restaurant_info (id, name, address, phone, email, operating_hours, total_capacity, menu_url, turnover_minutes, description)
-      VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (1, ?::text, ?::text, ?::text, ?::text, ?::text, ?::integer, ?::text, ?::integer, ?::text)
     `).run(
         'Al Seniour',
         'River Side, Tunis, Tunisia',
