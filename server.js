@@ -13,6 +13,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Health check for Docker/Cloud
+app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
+
 // ── Initialize Supabase Client (for real-time broadcasting) ──
 let supabase = null;
 if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
@@ -114,9 +117,6 @@ app.use((err, req, res, next) => {
     console.error('❌ Server error:', err.message);
     res.status(500).json({ error: 'Internal server error', message: err.message });
 });
-
-// Health check for Docker/Cloud
-app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
 
 // ── Graceful shutdown ──
 process.on('SIGINT', () => {
