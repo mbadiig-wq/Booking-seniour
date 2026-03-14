@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 const { v4: uuidv4 } = require('uuid');
 const { getDb } = require('../db/database');
 
-// GET /api/tables – List all tables
-router.get('/', async (req, res) => {
+// GET /api/tables – List all tables (Staff only)
+router.get('/', auth('staff'), async (req, res) => {
     const db = getDb();
     const { location, status } = req.query;
 
@@ -66,8 +67,8 @@ router.get('/available', async (req, res) => {
     });
 });
 
-// POST /api/tables – Add table
-router.post('/', async (req, res) => {
+// POST /api/tables – Add table (Staff only)
+router.post('/', auth('staff'), async (req, res) => {
     const db = getDb();
     const { table_number, capacity, location, pos_x, pos_y } = req.body;
 
@@ -87,8 +88,8 @@ router.post('/', async (req, res) => {
     res.status(201).json(table);
 });
 
-// PUT /api/tables/:id – Update table
-router.put('/:id', async (req, res) => {
+// PUT /api/tables/:id – Update table (Staff only)
+router.put('/:id', auth('staff'), async (req, res) => {
     const db = getDb();
     const { table_number, capacity, location, status, pos_x, pos_y } = req.body;
 
@@ -111,8 +112,8 @@ router.put('/:id', async (req, res) => {
     res.json(table);
 });
 
-// DELETE /api/tables/:id
-router.delete('/:id', async (req, res) => {
+// DELETE /api/tables/:id (Staff only)
+router.delete('/:id', auth('staff'), async (req, res) => {
     const db = getDb();
     const result = await db.prepare('DELETE FROM tables WHERE id = ?').run(req.params.id);
     if (result.changes === 0) return res.status(404).json({ error: 'Table not found' });

@@ -91,17 +91,17 @@ function broadcast(event) {
 // Make broadcast available to routes
 app.set('broadcast', broadcast);
 
-// ── API Routes ──
+// API Routes
 const auth = require('./middleware/auth');
 app.use('/api/auth', require('./routes/auth'));
 
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/restaurant', require('./routes/restaurant'));
 
-// Protected Routes
-app.use('/api/tables', auth('staff'), require('./routes/tables'));
-app.use('/api/reservations', auth('staff'), require('./routes/reservations'));
-app.use('/api/waitlist', auth('staff'), require('./routes/waitlist'));
+// Routes with internal auth control
+app.use('/api/tables', require('./routes/tables'));
+app.use('/api/reservations', require('./routes/reservations'));
+app.use('/api/waitlist', require('./routes/waitlist'));
 app.use('/api/analytics', auth('staff'), require('./routes/analytics'));
 
 // ── Serve frontend for all non-API routes ──

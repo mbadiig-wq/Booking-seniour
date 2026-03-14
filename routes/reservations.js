@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 const { v4: uuidv4 } = require('uuid');
 const { getDb } = require('../db/database');
 
-// GET /api/reservations – List all (with filters)
-router.get('/', async (req, res) => {
+// GET /api/reservations – List all (Staff only)
+router.get('/', auth('staff'), async (req, res) => {
     const db = getDb();
     const { date, status, customer_id, upcoming } = req.query;
 
@@ -37,8 +38,8 @@ router.get('/', async (req, res) => {
     res.json(reservations);
 });
 
-// GET /api/reservations/:id
-router.get('/:id', async (req, res) => {
+// GET /api/reservations/:id (Staff only)
+router.get('/:id', auth('staff'), async (req, res) => {
     const db = getDb();
     const reservation = await db.prepare(`
       SELECT r.*, c.name as customer_name, c.phone as customer_phone, c.email as customer_email,
@@ -152,8 +153,8 @@ router.post('/', async (req, res) => {
     res.status(201).json(reservation);
 });
 
-// Update status
-router.put('/:id/status', async (req, res) => {
+// Update status (Staff only)
+router.put('/:id/status', auth('staff'), async (req, res) => {
     const db = getDb();
     const { status } = req.body;
     const existing = await db.prepare('SELECT * FROM reservations WHERE id = ?').get(req.params.id);

@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 const { v4: uuidv4 } = require('uuid');
+
+// Protect all waitlist routes
+router.use(auth('staff'));
 const { getDb } = require('../db/database');
 
 // GET /api/waitlist
