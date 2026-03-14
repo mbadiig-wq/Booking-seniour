@@ -16,7 +16,8 @@ if (isProd) {
     db = {
         prepare: (sql) => ({
             get: async (...params) => {
-                const querySql = sql.replace(/\?/g, (_, i) => `$${i + 1}`);
+                let count = 0;
+                const querySql = sql.replace(/\?/g, () => `$${++count}`);
                 try {
                     const res = await pool.query(querySql, params);
                     return res.rows[0];
@@ -26,7 +27,8 @@ if (isProd) {
                 }
             },
             all: async (...params) => {
-                const querySql = sql.replace(/\?/g, (_, i) => `$${i + 1}`);
+                let count = 0;
+                const querySql = sql.replace(/\?/g, () => `$${++count}`);
                 try {
                     const res = await pool.query(querySql, params);
                     return res.rows;
@@ -36,7 +38,8 @@ if (isProd) {
                 }
             },
             run: async (...params) => {
-                const querySql = sql.replace(/\?/g, (_, i) => `$${i + 1}`);
+                let count = 0;
+                const querySql = sql.replace(/\?/g, () => `$${++count}`);
                 try {
                     const res = await pool.query(querySql, params);
                     return { lastInsertRowid: res.rows[0]?.id || null, changes: res.rowCount };
