@@ -13,6 +13,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ── Initialize Supabase Client (for real-time broadcasting) ──
+let supabase = null;
+if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+    const { createClient } = require('@supabase/supabase-js');
+    supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+    console.log('🌌 Supabase Realtime client initialized');
+}
+
 // ── Initialize Database & Start Server ──
 async function start() {
     try {
