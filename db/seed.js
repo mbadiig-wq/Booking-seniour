@@ -50,7 +50,7 @@ async function seedDatabase(db) {
     ];
 
     for (const t of tables) {
-        await db.prepare('INSERT INTO tables (id, table_number, capacity, location, status, pos_x, pos_y) VALUES (?, ?, ?, ?, \'available\', ?, ?)')
+        await db.prepare('INSERT INTO tables (id, table_number, capacity, location, status, pos_x, pos_y) VALUES (CAST(? AS TEXT), CAST(? AS INTEGER), CAST(? AS INTEGER), CAST(? AS TEXT), \'available\', CAST(? AS REAL), CAST(? AS REAL))')
             .run(uuidv4(), t.number, t.capacity, t.location, t.x, t.y);
     }
 
@@ -64,7 +64,7 @@ async function seedDatabase(db) {
     for (const c of customers) {
         const id = uuidv4();
         customerIds.push(id);
-        await db.prepare('INSERT INTO customers (id, name, email) VALUES (?, ?, ?)').run(id, c.name, c.email);
+        await db.prepare('INSERT INTO customers (id, name, email) VALUES (CAST(? AS TEXT), CAST(? AS TEXT), CAST(? AS TEXT))').run(id, c.name, c.email);
     }
 
     console.log(`✅ Seeded: ${tables.length} tables and ${customers.length} customers.`);

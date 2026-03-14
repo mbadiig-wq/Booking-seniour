@@ -16,29 +16,32 @@ if (isProd) {
     db = {
         prepare: (sql) => ({
             get: async (...params) => {
+                const querySql = sql.replace(/\?/g, (_, i) => `$${i + 1}`);
                 try {
-                    const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                    const res = await pool.query(querySql, params);
                     return res.rows[0];
                 } catch (err) {
-                    console.error('❌ PG Query Error (get):', { sql, params, error: err.message });
+                    console.error('❌ PG Query Error (get):', { sql: querySql, params, error: err.message, code: err.code });
                     throw err;
                 }
             },
             all: async (...params) => {
+                const querySql = sql.replace(/\?/g, (_, i) => `$${i + 1}`);
                 try {
-                    const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                    const res = await pool.query(querySql, params);
                     return res.rows;
                 } catch (err) {
-                    console.error('❌ PG Query Error (all):', { sql, params, error: err.message });
+                    console.error('❌ PG Query Error (all):', { sql: querySql, params, error: err.message, code: err.code });
                     throw err;
                 }
             },
             run: async (...params) => {
+                const querySql = sql.replace(/\?/g, (_, i) => `$${i + 1}`);
                 try {
-                    const res = await pool.query(sql.replace(/\?/g, (_, i) => `$${i + 1}`), params);
+                    const res = await pool.query(querySql, params);
                     return { lastInsertRowid: res.rows[0]?.id || null, changes: res.rowCount };
                 } catch (err) {
-                    console.error('❌ PG Query Error (run):', { sql, params, error: err.message });
+                    console.error('❌ PG Query Error (run):', { sql: querySql, params, error: err.message, code: err.code });
                     throw err;
                 }
             }
