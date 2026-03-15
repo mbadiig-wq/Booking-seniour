@@ -7,7 +7,7 @@
 
     // ── State ──
     let currentApp = 'customer'; // customer | staff | admin
-    let reservationState = { partySize: 2, date: '', time: '', tableId: null, step: 1 };
+    let reservationState = { partySize: 2, childrenCount: 0, date: '', time: '', tableId: null, step: 1 };
     let lastConfirmedReservation = null;
 
     // Authentication state (persisted via API token and role)
@@ -260,6 +260,21 @@
             container.appendChild(btn);
         }
 
+        // Children count buttons
+        const childrenContainer = $('#childrenSelector');
+        childrenContainer.innerHTML = '';
+        for (let i = 0; i <= 6; i++) {
+            const btn = document.createElement('button');
+            btn.className = `party-size-btn${i === 0 ? ' active' : ''}`;
+            btn.textContent = i;
+            btn.addEventListener('click', () => {
+                $$('#childrenSelector .party-size-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                reservationState.childrenCount = i;
+            });
+            childrenContainer.appendChild(btn);
+        }
+
         // Date default
         const dateInput = $('#reserveDate');
         dateInput.value = getToday();
@@ -296,12 +311,14 @@
     }
 
     async function checkAvailability() {
-        const { date, time, partySize } = reservationState;
+        const { date, time, partySize, childrenCount } = reservationState;
         if (!date) { showToast('Missing Date', 'Please select a date', 'warning'); return; }
         if (!time) { showToast('Missing Time', 'Please select a time', 'warning'); return; }
 
+        const totalPartySize = partySize + childrenCount;
+
         try {
-            const result = await API.checkAvailability(date, time, partySize);
+            const result = await API.checkAvailability(date, time, totalPartySize);
 
             if (result.available.length > 0) {
                 // Auto-select first available table for simplified flow
@@ -352,7 +369,7 @@
                         </div>
                         <div style="display:flex;justify-content:space-between;">
                             <span style="color:var(--color-text-muted);">Guests:</span>
-                            <span style="font-weight:var(--fw-semibold);">${reservationState.partySize} personnes</span>
+                            <span style="font-weight:var(--fw-semibold);">${reservationState.partySize} adultes${reservationState.childrenCount > 0 ? ', ' + reservationState.childrenCount + ' enfants' : ''}</span>
                         </div>
                     </div>
                 `;
@@ -378,6 +395,10 @@
         if (!name) { showToast('Name Required', 'Please enter your name', 'warning'); return; }
         if (!phone) { showToast('Phone Required', 'Please enter your phone number', 'warning'); return; }
 
+        const totalPartySize = reservationState.partySize + reservationState.childrenCount;
+        const breakdown = `Adultes: ${reservationState.partySize}, Enfants: ${reservationState.childrenCount}`;
+        const finalRequests = requests ? `${breakdown} | ${requests}` : breakdown;
+
         try {
             const reservation = await API.createReservation({
                 customer_name: name,
@@ -386,8 +407,8 @@
                 table_id: reservationState.tableId,
                 reservation_date: reservationState.date,
                 reservation_time: reservationState.time,
-                party_size: reservationState.partySize,
-                special_requests: requests
+                party_size: totalPartySize,
+                special_requests: finalRequests
             });
 
             lastConfirmedReservation = reservation;
