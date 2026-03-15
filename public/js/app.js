@@ -248,12 +248,13 @@
         // Party size buttons
         const container = $('#partySizeSelector');
         container.innerHTML = '';
-        for (let i = 1; i <= 12; i++) {
+        const maxGuests = 20;
+        for (let i = 1; i <= maxGuests; i++) {
             const btn = document.createElement('button');
             btn.className = `party-size-btn${i === 2 ? ' active' : ''}`;
             btn.textContent = i;
             btn.addEventListener('click', () => {
-                $$('.party-size-btn').forEach(b => b.classList.remove('active'));
+                $$('#partySizeSelector .party-size-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 reservationState.partySize = i;
             });
@@ -263,10 +264,10 @@
         // Children count buttons
         const childrenContainer = $('#childrenSelector');
         childrenContainer.innerHTML = '';
-        for (let i = 0; i <= 6; i++) {
+        for (let i = 0; i <= 10; i++) {
             const btn = document.createElement('button');
             btn.className = `party-size-btn${i === 0 ? ' active' : ''}`;
-            btn.textContent = i;
+            btn.textContent = i === 0 ? 'Aucun' : i;
             btn.addEventListener('click', () => {
                 $$('#childrenSelector .party-size-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
