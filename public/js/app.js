@@ -1075,11 +1075,21 @@
         });
 
         // Customer: Reservation form
-        $('#checkAvailability').addEventListener('click', checkAvailability);
-        $('#backToStep1').addEventListener('click', () => showReserveStep(1));
-        $('#proceedToDetails').addEventListener('click', () => showReserveStep(3));
-        $('#backToStep2').addEventListener('click', () => showReserveStep(2));
-        $('#confirmReservation').addEventListener('click', confirmReservation);
+        const btnCheck = $('#checkAvailability');
+        const btnBack1 = $('#backToStep1');
+        const btnProceed = $('#proceedToDetails'); // Step 2 (Simplified out)
+        const btnBack2 = $('#backToStep2'); // Step 2 (Simplified out)
+        const btnConfirm = $('#confirmReservation');
+
+        if (btnCheck) btnCheck.addEventListener('click', checkAvailability);
+        if (btnBack1) btnBack1.addEventListener('click', () => showReserveStep(1));
+        if (btnConfirm) btnConfirm.addEventListener('click', confirmReservation);
+
+        // Obsolete listeners for removed steps (kept for safety if elements exist)
+        if (btnProceed) btnProceed.addEventListener('click', () => showReserveStep(3));
+        if (btnBack2) btnBack2.addEventListener('click', () => showReserveStep(2));
+
+        $('#addToCalendar').addEventListener('click', addToCalendar);
         $('#addToCalendar').addEventListener('click', addToCalendar);
         $('#lookupReservations').addEventListener('click', lookupReservations);
         $('#lookupField').addEventListener('keydown', (e) => { if (e.key === 'Enter') lookupReservations(); });
