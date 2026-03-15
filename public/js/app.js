@@ -226,11 +226,15 @@
                 for (const [day, h] of Object.entries(hours)) {
                     hoursText += `${day.charAt(0).toUpperCase() + day.slice(1)}: ${h.open} – ${h.close}<br>`;
                 }
-                $('#infoHours').innerHTML = hoursText;
+                const hoursEl = $('#infoHours');
+                if (hoursEl) hoursEl.innerHTML = hoursText;
             }
-            if (info.address) $('#infoAddress').textContent = info.address;
-            if (info.phone || info.email) {
-                $('#infoContact').innerHTML = `${info.phone || ''}<br>${info.email || ''}`;
+            const addressEl = $('#infoAddress');
+            if (info.address && addressEl) addressEl.textContent = info.address;
+
+            const contactEl = $('#infoContact');
+            if ((info.phone || info.email) && contactEl) {
+                contactEl.innerHTML = `${info.phone || ''}<br>${info.email || ''}`;
             }
         } catch (e) {
             console.error('Failed to load restaurant info:', e);
