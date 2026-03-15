@@ -16,10 +16,17 @@
     .staff-main,
     .admin-main {
         margin-left: 0;
+        padding-top: 80px;
+        /* Space for the floating mobile button */
     }
 
     .mobile-menu-btn {
         display: flex;
+    }
+
+    /* Adjust sidebar padding for mobile button */
+    .sidebar-header {
+        padding-left: 72px;
     }
 
     .stats-grid {
@@ -167,6 +174,11 @@
     .reservation-card {
         flex-direction: column;
         align-items: flex-start;
+        gap: var(--sp-4);
+    }
+
+    .reservation-card-info {
+        width: 100%;
     }
 
     .reservation-card-meta {

@@ -464,9 +464,20 @@
     font-size: var(--fs-xl);
     font-weight: var(--fw-bold);
     color: var(--color-primary);
-    display: flex;
     align-items: center;
     gap: var(--sp-3);
+}
+
+.brand-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+.sidebar-logo-img {
+    height: 60px;
+    width: auto;
+    max-width: 100%;
 }
 
 .sidebar-logo svg {
@@ -708,15 +719,26 @@
 
 /* ── Mobile Menu Toggle ── */
 .mobile-menu-btn {
-    display: none;
+    display: flex;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: var(--z-sticky);
     width: 40px;
     height: 40px;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    border: none;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-light);
     color: var(--color-text-primary);
     cursor: pointer;
     border-radius: var(--radius-md);
     font-size: var(--fs-xl);
+    box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 1025px) {
+    .mobile-menu-btn {
+        display: none;
+    }
 }

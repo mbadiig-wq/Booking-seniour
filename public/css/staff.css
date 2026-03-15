@@ -38,6 +38,18 @@
     margin-bottom: var(--sp-6);
 }
 
+.staff-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-6);
+}
+
+@media (max-width: 1024px) {
+    .staff-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .stat-card .stat-icon.gold {
     background: var(--color-primary-glow);
 }
