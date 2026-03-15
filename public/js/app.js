@@ -302,30 +302,13 @@
 
         try {
             const result = await API.checkAvailability(date, time, partySize);
-            showReserveStep(2);
-
-            const tablesList = $('#availableTablesList');
-            const altSection = $('#alternativeTimesSection');
 
             if (result.available.length > 0) {
-                $('#availabilityMessage').textContent = `${result.available.length} table(s) available for ${partySize} guests on ${formatDate(date)} at ${formatTime(time)}`;
-                tablesList.innerHTML = result.available.map(t => `
-          <div class="table-option" data-table-id="${t.id}" onclick="window._selectTable('${t.id}')">
-            <div class="table-option-number">Table ${t.table_number}</div>
-            <div class="table-option-info">${t.capacity} seats · ${t.location}</div>
-          </div>
-        `).join('');
-                altSection.classList.add('hidden');
+                // Auto-select first available table for simplified flow
+                reservationState.tableId = result.available[0].id;
+                showReserveStep(3); // Go directly to details
             } else {
-                $('#availabilityMessage').textContent = 'No tables available for the selected time. Try an alternative:';
-                tablesList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🍽️</div><p class="empty-state-text">No tables match your criteria at this time</p></div>';
-
-                if (result.alternativeTimes && result.alternativeTimes.length > 0) {
-                    altSection.classList.remove('hidden');
-                    $('#alternativeTimeSlots').innerHTML = result.alternativeTimes.map(t => `
-            <button class="time-slot" onclick="window._selectAlternativeTime('${t}')">${formatTime(t)}</button>
-          `).join('');
-                }
+                showToast('Complet', 'Aucune table disponible pour cet horaire', 'warning');
             }
         } catch (e) {
             showToast('Error', e.message, 'error');
@@ -352,6 +335,29 @@
         reservationState.step = step;
         $$('.reserve-step').forEach(s => s.classList.add('hidden'));
         $(`#reserveStep${step}`).classList.remove('hidden');
+
+        if (step === 3) {
+            const summary = $('#reservationSummary');
+            if (summary) {
+                summary.innerHTML = `
+                    <div style="padding:var(--sp-4);background:var(--color-bg-secondary);border-radius:var(--radius-md);border:1px solid var(--color-border);display:grid;gap:var(--sp-2);">
+                        <div style="font-size:var(--fs-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.05em;">Détails de la réservation</div>
+                        <div style="display:flex;justify-content:space-between;">
+                            <span style="color:var(--color-text-muted);">Date:</span>
+                            <span style="font-weight:var(--fw-semibold);">${formatDate(reservationState.date)}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;">
+                            <span style="color:var(--color-text-muted);">Heure:</span>
+                            <span style="font-weight:var(--fw-semibold);">${formatTime(reservationState.time)}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;">
+                            <span style="color:var(--color-text-muted);">Guests:</span>
+                            <span style="font-weight:var(--fw-semibold);">${reservationState.partySize} personnes</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
         $$('.step-progress .step').forEach((s, i) => {
             s.classList.remove('active', 'completed');
@@ -402,7 +408,7 @@
             if (phone) localStorage.setItem('userPhone', phone);
 
             navigateTo('confirm');
-            showToast('Reservation Confirmed!', `Table ${reservation.table_number} on ${formatDate(reservation.reservation_date)} at ${formatTime(reservation.reservation_time)}`, 'success');
+            showToast('Réservation Confirmée!', `Réservation pour ${reservation.party_size} guests le ${formatDate(reservation.reservation_date)} à ${formatTime(reservation.reservation_time)}`, 'success');
 
             // Reset form
             $('#custName').value = '';

@@ -98,23 +98,18 @@
       <section id="page-reserve" class="page-view">
         <div class="reservation-page">
           <h2>Reserve Your Table</h2>
-          <p class="subtitle">Select your preferred date, time, and party size</p>
+          <p class="subtitle">Sélectionnez la date, l'heure et le nombre de guests</p>
 
           <!-- Step Progress -->
           <div class="step-progress">
             <div class="step active" data-step="1">
               <div class="step-circle">1</div>
-              <span class="step-label">Date & Time</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step" data-step="2">
-              <div class="step-circle">2</div>
-              <span class="step-label">Select Table</span>
+              <span class="step-label">Date & Heure</span>
             </div>
             <div class="step-line"></div>
             <div class="step" data-step="3">
-              <div class="step-circle">3</div>
-              <span class="step-label">Your Details</span>
+              <div class="step-circle">2</div>
+              <span class="step-label">Vos Détails</span>
             </div>
           </div>
 
@@ -122,7 +117,7 @@
           <div id="reserveStep1" class="reserve-step">
             <div class="card">
               <div class="form-group">
-                <label class="form-label">Party Size</label>
+                <label class="form-label">Nombre de guests</label>
                 <div class="party-size-selector" id="partySizeSelector"></div>
               </div>
 
@@ -137,7 +132,7 @@
                 </div>
               </div>
 
-              <button class="btn btn-primary w-full" id="checkAvailability">Check Availability</button>
+              <button class="btn btn-primary w-full" id="checkAvailability">Continuer</button>
             </div>
           </div>
 
@@ -163,9 +158,10 @@
           <div id="reserveStep3" class="reserve-step hidden">
             <div class="card">
               <div class="card-header">
-                <h4 class="card-title">Your Details</h4>
-                <button class="btn btn-ghost btn-sm" id="backToStep2">← Back</button>
+                <h4 class="card-title">Vos Détails</h4>
+                <button class="btn btn-ghost btn-sm" id="backToStep1">← Retour</button>
               </div>
+              <div id="reservationSummary" class="reservation-summary mb-4"></div>
               <div class="form-group">
                 <label class="form-label">Full Name *</label>
                 <input type="text" class="form-input" id="custName" placeholder="Your full name" required>
