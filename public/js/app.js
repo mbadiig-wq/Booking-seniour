@@ -1093,10 +1093,27 @@
         $('#analyticsPeriod').addEventListener('change', loadAnalytics);
 
         // Mobile menu
+        const customerMenuBtn = $('#customerMenuBtn');
         const staffMenuBtn = $('#staffMenuBtn');
         const adminMenuBtn = $('#adminMenuBtn');
-        if (staffMenuBtn) staffMenuBtn.addEventListener('click', () => $('#staffSidebar').classList.toggle('open'));
-        if (adminMenuBtn) adminMenuBtn.addEventListener('click', () => $('#adminSidebar').classList.toggle('open'));
+
+        if (customerMenuBtn) customerMenuBtn.addEventListener('click', () => $('.topbar-nav').classList.toggle('mobile-open'));
+        if (staffMenuBtn) staffMenuBtn.addEventListener('click', () => $('#staffSidebar').classList.add('open'));
+        if (adminMenuBtn) adminMenuBtn.addEventListener('click', () => $('#adminSidebar').classList.add('open'));
+
+        // Sidebar close buttons
+        const closeStaffSidebar = $('#closeStaffSidebar');
+        const closeAdminSidebar = $('#closeAdminSidebar');
+        if (closeStaffSidebar) closeStaffSidebar.addEventListener('click', () => $('#staffSidebar').classList.remove('open'));
+        if (closeAdminSidebar) closeAdminSidebar.addEventListener('click', () => $('#adminSidebar').classList.remove('open'));
+
+        // Close sidebars on nav link click
+        $$('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                $('#staffSidebar').classList.remove('open');
+                $('#adminSidebar').classList.remove('open');
+            });
+        });
 
         // Modal close on overlay click
         $('#modalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
