@@ -99,6 +99,17 @@
         }
         if (page === 'home' || page === 'reserve' || page === 'my-reservations' || page === 'confirm') {
             switchApp('customer');
+            $$('.page-view').forEach(p => p.classList.remove('active'));
+            $$('.topbar-link').forEach(l => l.classList.remove('active'));
+            const target = $('#page-' + page);
+            if (target) target.classList.add('active');
+            const link = $(`.topbar-link[data-nav="${page}"]`);
+            if (link) link.classList.add('active');
+
+            // Close mobile menu on navigate
+            $('.topbar-nav').classList.remove('mobile-open');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
         }
 
         // Show/hide customer pages

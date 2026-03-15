@@ -480,6 +480,10 @@
     max-width: 100%;
 }
 
+.sidebar-close {
+    display: none;
+}
+
 .sidebar-logo svg {
     width: 28px;
     height: 28px;

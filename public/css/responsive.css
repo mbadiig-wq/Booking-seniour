@@ -24,6 +24,10 @@
         display: flex;
     }
 
+    .sidebar-close {
+        display: flex;
+    }
+
     /* Adjust sidebar padding for mobile button */
     .sidebar-header {
         padding-left: 72px;
@@ -96,7 +100,28 @@
     }
 
     .topbar-nav {
-        gap: var(--sp-3);
+        display: none;
+        /* Hide real nav, we use sidebar or something else? Wait, customer doesn't have a sidebar yet. Let's make one. */
+    }
+
+    .topbar-nav.mobile-open {
+        display: flex;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--color-bg-elevated);
+        flex-direction: column;
+        padding: var(--sp-6);
+        border-bottom: 1px solid var(--color-border);
+        gap: var(--sp-4);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .customer-topbar .mobile-menu-btn {
+        display: flex;
+        position: static;
+        margin-right: var(--sp-3);
     }
 
     .topbar-link span {
