@@ -8,6 +8,7 @@
     // ── State ──
     let currentApp = 'customer'; // customer | staff | admin
     let reservationState = { partySize: 2, childrenCount: 0, date: '', time: '', tableId: null, step: 1 };
+    let unreadCount = 0;
     let lastConfirmedReservation = null;
 
     // Authentication state (persisted via API token and role)
@@ -1106,7 +1107,12 @@
         API.connectSync();
 
         API.on('reservation_created', (data) => {
-            showToast('New Reservation', `${data.customer_name} – ${formatTime(data.reservation_time)}`, 'info');
+            unreadCount++;
+            updateNotificationBadge();
+            playNotificationSound();
+            addNotificationToList(data);
+
+            showToast('New Reservation', `<strong>${data.customer_name}</strong> – ${data.party_size} guests at ${formatTime(data.reservation_time)}`, 'info');
 
             // Native browser notification
             if (Notification.permission === 'granted') {
@@ -1116,7 +1122,11 @@
                 });
             }
 
-            if (currentApp === 'staff') loadStaffDashboard();
+            if (currentApp === 'staff') {
+                loadStaffDashboard();
+                // Highlight the new row after a short delay to ensure rendering
+                setTimeout(() => highlightReservationRow(data.id), 500);
+            }
         });
 
         API.on('reservation_updated', () => {
@@ -1140,6 +1150,65 @@
 
         API.on('waitlist_added', () => {
             if (currentApp === 'staff') loadWaitlist();
+        });
+    }
+
+    // ── Notification Helpers ──
+    function playNotificationSound() {
+        const sound = $('#notifSound');
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('Audio play failed:', e));
+        }
+    }
+
+    function updateNotificationBadge() {
+        const badge = $('#notifBadge');
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    function addNotificationToList(res) {
+        const list = $('#notifList');
+        const empty = list.querySelector('.notif-empty');
+        if (empty) empty.remove();
+
+        const item = document.createElement('div');
+        item.className = 'notif-item unread';
+        item.innerHTML = `
+            <div class="notif-item-header">
+                <span class="notif-name">${res.customer_name}</span>
+                <span class="notif-time">À l'instant</span>
+            </div>
+            <div class="notif-body">
+                ${res.party_size} guests – ${formatDate(res.reservation_date)} à ${formatTime(res.reservation_time)}
+                ${res.customer_phone ? `<br><small>📞 ${res.customer_phone}</small>` : ''}
+            </div>
+        `;
+
+        item.addEventListener('click', () => {
+            item.classList.remove('unread');
+            navigateTo('dashboard');
+            highlightReservationRow(res.id);
+            window._showReservationDetail(res.id);
+            $('#notifPanel').classList.remove('open');
+        });
+
+        list.prepend(item);
+    }
+
+    function highlightReservationRow(id) {
+        const rows = $$('.reservation-row');
+        rows.forEach(row => {
+            if (row.dataset.id === id) {
+                row.classList.add('new-reservation-highlight');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => row.classList.remove('new-reservation-highlight'), 5000);
+            }
         });
     }
 
@@ -1184,6 +1253,27 @@
         const savedPhone = localStorage.getItem('userPhone');
         if (savedEmail) $('#lookupField').value = savedEmail;
         else if (savedPhone) $('#lookupField').value = savedPhone;
+
+        // Notifications
+        $('#notifBell').addEventListener('click', (e) => {
+            e.stopPropagation();
+            $('#notifPanel').classList.toggle('open');
+            unreadCount = 0;
+            updateNotificationBadge();
+        });
+
+        $('#clearNotifs').addEventListener('click', (e) => {
+            e.stopPropagation();
+            $('#notifList').innerHTML = '<div class="notif-empty">Aucune nouvelle réservation</div>';
+            unreadCount = 0;
+            updateNotificationBadge();
+        });
+
+        document.addEventListener('click', () => {
+            $('#notifPanel').classList.remove('open');
+        });
+
+        $('#notifPanel').addEventListener('click', (e) => e.stopPropagation());
 
         // Staff
         $('#exportResPDF').addEventListener('click', exportReservationsToPDF);

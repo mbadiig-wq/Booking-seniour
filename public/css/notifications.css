@@ -1,0 +1,212 @@
+/* ============================================
+   NOTIFICATIONS STYLES
+   ============================================ */
+
+.staff-top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-3) var(--sp-6);
+    background: var(--color-bg-card);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 200;
+}
+
+.staff-top-nav-left {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+}
+
+.staff-top-nav-title {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    color: var(--color-primary);
+}
+
+.staff-top-nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.notification-wrapper {
+    position: relative;
+}
+
+.notification-bell {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    padding: var(--sp-2);
+    cursor: pointer;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-bell:hover {
+    color: var(--color-primary);
+    background: var(--color-bg-secondary);
+}
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--color-danger);
+    color: white;
+    font-size: 10px;
+    font-weight: var(--fw-bold);
+    padding: 2px 5px;
+    border-radius: var(--radius-full);
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-bg-card);
+}
+
+.notification-badge.hidden {
+    display: none;
+}
+
+.notification-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 320px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.notification-panel.open {
+    display: flex;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notif-panel-header {
+    padding: var(--sp-4);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notif-panel-header h3 {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+}
+
+.btn-clear {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.btn-clear:hover {
+    color: var(--color-danger);
+    text-decoration: underline;
+}
+
+.notif-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    padding: var(--sp-4);
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notif-item:hover {
+    background: var(--color-bg-secondary);
+}
+
+.notif-item.unread {
+    background: rgba(196, 160, 82, 0.05);
+}
+
+.notif-item-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.notif-name {
+    font-weight: var(--fw-bold);
+    font-size: 13px;
+}
+
+.notif-time {
+    font-size: 10px;
+    color: var(--color-text-muted);
+}
+
+.notif-body {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.notif-empty {
+    padding: var(--sp-8);
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+}
+
+/* Row highlight animation */
+.new-reservation-highlight {
+    animation: highlightRow 5s ease-out;
+}
+
+@keyframes highlightRow {
+    0% {
+        background-color: rgba(196, 160, 82, 0.3);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* Mobile specific */
+@media (max-width: 768px) {
+    .staff-top-nav-title {
+        display: none;
+    }
+
+    .notification-panel {
+        position: fixed;
+        top: 60px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+    }
+}
