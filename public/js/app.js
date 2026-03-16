@@ -737,6 +737,55 @@
         }
     }
 
+    async function exportReservationsToExcel() {
+        const date = $('#resListDate').value || getToday();
+        const status = $('#resListFilter').value;
+        const filters = { date };
+        if (status) filters.status = status;
+
+        try {
+            const reservations = await API.getReservations(filters);
+            if (reservations.length === 0) {
+                showToast('Export', 'No reservations to export for this date', 'warning');
+                return;
+            }
+
+            // Generate CSV
+            const headers = ['Time', 'Date', 'Customer Name', 'Phone', 'Email', 'Guests', 'Table', 'Location', 'Status', 'Special Requests'];
+            const rows = reservations.map(r => [
+                formatTime(r.reservation_time),
+                r.reservation_date,
+                r.customer_name,
+                r.customer_phone || '',
+                r.customer_email || '',
+                r.party_size,
+                r.table_number || 'Unassigned',
+                r.table_location || '',
+                r.status,
+                (r.special_requests || '').replace(/"/g, '""')
+            ]);
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(val => `"${val}"`).join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `reservations_${date}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('Success', 'Reservations exported successfully', 'success');
+        } catch (e) {
+            showToast('Error', 'Export failed: ' + e.message, 'error');
+        }
+    }
+
     window._showReservationDetail = async function (id) {
         try {
             const r = await API.getReservation(id);
@@ -1053,6 +1102,15 @@
 
         API.on('reservation_created', (data) => {
             showToast('New Reservation', `${data.customer_name} – ${formatTime(data.reservation_time)}`, 'info');
+
+            // Native browser notification
+            if (Notification.permission === 'granted') {
+                new Notification('New Reservation - Al Seniour', {
+                    body: `${data.customer_name} at ${formatTime(data.reservation_time)} for ${data.party_size} guests`,
+                    icon: '/img/logo.png'
+                });
+            }
+
             if (currentApp === 'staff') loadStaffDashboard();
         });
 
@@ -1123,6 +1181,7 @@
         else if (savedPhone) $('#lookupField').value = savedPhone;
 
         // Staff
+        $('#exportResExcel').addEventListener('click', exportReservationsToExcel);
         $('#staffNewBooking').addEventListener('click', showNewBookingModal);
         $('#resListDate').addEventListener('change', loadReservationsList);
         $('#resListFilter').addEventListener('change', loadReservationsList);
@@ -1165,6 +1224,11 @@
 
         // Load home data
         loadRestaurantInfo();
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            Notification.requestPermission();
+        }
 
         // Handle hash routing
         const hash = window.location.hash.replace('#', '') || 'home';
