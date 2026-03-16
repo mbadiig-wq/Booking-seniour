@@ -770,15 +770,24 @@
                 ...rows.map(row => row.map(val => `"${val}"`).join(','))
             ].join('\n');
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            // Add BOM for Excel UTF-8 compatibility and use robust download pattern
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('download', `reservations_${date}.csv`);
-            link.style.visibility = 'hidden';
+            link.href = url;
+            link.download = `reservations_${date}.csv`;
+
+            // Required for Firefox and some Chrome configurations
+            link.style.display = 'none';
             document.body.appendChild(link);
+
             link.click();
-            document.body.removeChild(link);
+
+            // Delay cleanup to ensure browser processes the download
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
 
             showToast('Success', 'Reservations exported successfully', 'success');
         } catch (e) {
