@@ -248,18 +248,22 @@
         // Party size buttons
         const container = $('#partySizeSelector');
         container.innerHTML = '';
-        const maxGuests = 20;
-        for (let i = 1; i <= maxGuests; i++) {
+        const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, '10+', '20+', '30+', '40+', '50+'];
+
+        options.forEach(opt => {
             const btn = document.createElement('button');
-            btn.className = `party-size-btn${i === 2 ? ' active' : ''}`;
-            btn.textContent = i;
+            const isNumeric = typeof opt === 'number';
+            const value = isNumeric ? opt : parseInt(opt);
+
+            btn.className = `party-size-btn${value === 2 ? ' active' : ''}`;
+            btn.textContent = opt;
             btn.addEventListener('click', () => {
                 $$('#partySizeSelector .party-size-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                reservationState.partySize = i;
+                reservationState.partySize = value;
             });
             container.appendChild(btn);
-        }
+        });
 
         // Children count buttons
         const childrenContainer = $('#childrenSelector');
