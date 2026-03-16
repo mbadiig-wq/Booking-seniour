@@ -1,6 +1,7 @@
 const API = {
     base: '',
     token: localStorage.getItem('seniour_token') || null,
+    listeners: {},
 
     setToken(token, role = null) {
         this.token = token;

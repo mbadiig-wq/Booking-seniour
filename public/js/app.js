@@ -26,6 +26,11 @@
     function $(sel) { return document.querySelector(sel); }
     function $$(sel) { return document.querySelectorAll(sel); }
 
+    function on(sel, event, callback) {
+        const el = typeof sel === 'string' ? $(sel) : sel;
+        if (el) el.addEventListener(event, callback);
+    }
+
     function formatDate(dateStr) {
         const d = new Date(dateStr + 'T00:00:00');
         return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -1216,7 +1221,7 @@
     // Initialize
     // ═══════════════════════════════
     function init() {
-        // Navigation
+        // Navigation (Delegated)
         document.addEventListener('click', (e) => {
             const navBtn = e.target.closest('[data-nav]');
             if (navBtn) { navigateTo(navBtn.dataset.nav); return; }
@@ -1228,41 +1233,29 @@
             if (adminNav) { handleAdminNav(adminNav.dataset.adminNav); return; }
         });
 
-        // Customer: Reservation form
-        const btnCheck = $('#checkAvailability');
-        const btnBack1 = $('#backToStep1');
-        const btnProceed = $('#proceedToDetails'); // Step 2 (Simplified out)
-        const btnBack2 = $('#backToStep2'); // Step 2 (Simplified out)
-        const btnConfirm = $('#confirmReservation');
-
-        if (btnCheck) btnCheck.addEventListener('click', checkAvailability);
-        if (btnBack1) btnBack1.addEventListener('click', () => showReserveStep(1));
-        if (btnConfirm) btnConfirm.addEventListener('click', confirmReservation);
-
-        // Obsolete listeners for removed steps (kept for safety if elements exist)
-        if (btnProceed) btnProceed.addEventListener('click', () => showReserveStep(3));
-        if (btnBack2) btnBack2.addEventListener('click', () => showReserveStep(2));
-
-        $('#addToCalendar').addEventListener('click', addToCalendar);
-        $('#addToCalendar').addEventListener('click', addToCalendar);
-        $('#lookupReservations').addEventListener('click', lookupReservations);
-        $('#lookupField').addEventListener('keydown', (e) => { if (e.key === 'Enter') lookupReservations(); });
+        // Safe Listeners
+        on('#checkAvailability', 'click', checkAvailability);
+        on('#backToStep1', 'click', () => showReserveStep(1));
+        on('#confirmReservation', 'click', confirmReservation);
+        on('#addToCalendar', 'click', addToCalendar);
+        on('#lookupReservations', 'click', lookupReservations);
+        on('#lookupField', 'keydown', (e) => { if (e.key === 'Enter') lookupReservations(); });
 
         // Pre-fill lookup
         const savedEmail = localStorage.getItem('userEmail');
         const savedPhone = localStorage.getItem('userPhone');
-        if (savedEmail) $('#lookupField').value = savedEmail;
-        else if (savedPhone) $('#lookupField').value = savedPhone;
+        if (savedEmail && $('#lookupField')) $('#lookupField').value = savedEmail;
+        else if (savedPhone && $('#lookupField')) $('#lookupField').value = savedPhone;
 
         // Notifications
-        $('#notifBell').addEventListener('click', (e) => {
+        on('#notifBell', 'click', (e) => {
             e.stopPropagation();
             $('#notifPanel').classList.toggle('open');
             unreadCount = 0;
             updateNotificationBadge();
         });
 
-        $('#clearNotifs').addEventListener('click', (e) => {
+        on('#clearNotifs', 'click', (e) => {
             e.stopPropagation();
             $('#notifList').innerHTML = '<div class="notif-empty">Aucune nouvelle réservation</div>';
             unreadCount = 0;
@@ -1270,67 +1263,58 @@
         });
 
         document.addEventListener('click', () => {
-            $('#notifPanel').classList.remove('open');
+            if ($('#notifPanel')) $('#notifPanel').classList.remove('open');
         });
 
-        $('#notifPanel').addEventListener('click', (e) => e.stopPropagation());
+        on('#notifPanel', 'click', (e) => e.stopPropagation());
 
         // Staff
-        $('#exportResPDF').addEventListener('click', exportReservationsToPDF);
-        $('#staffNewBooking').addEventListener('click', showNewBookingModal);
-        $('#resListDate').addEventListener('change', loadReservationsList);
-        $('#resListFilter').addEventListener('change', loadReservationsList);
-        $('#floorFilter').addEventListener('change', loadFloorMap);
-        $('#addToWaitlist').addEventListener('click', showAddToWaitlistModal);
+        on('#exportResPDF', 'click', exportReservationsToPDF);
+        on('#staffNewBooking', 'click', showNewBookingModal);
+        on('#resListDate', 'change', loadReservationsList);
+        on('#resListFilter', 'change', loadReservationsList);
+        on('#floorFilter', 'change', loadFloorMap);
+        on('#addToWaitlist', 'click', showAddToWaitlistModal);
 
         // Admin
-        $('#saveConfig').addEventListener('click', saveAdminConfig);
-        $('#addTableBtn').addEventListener('click', addTable);
-        $('#analyticsPeriod').addEventListener('change', loadAnalytics);
+        on('#saveConfig', 'click', saveAdminConfig);
+        on('#addTableBtn', 'click', addTable);
+        on('#analyticsPeriod', 'change', loadAnalytics);
 
         // Mobile menu
-        const customerMenuBtn = $('#customerMenuBtn');
-        const staffMenuBtn = $('#staffMenuBtn');
-        const adminMenuBtn = $('#adminMenuBtn');
+        on('#customerMenuBtn', 'click', () => $('.topbar-nav').classList.toggle('mobile-open'));
+        on('#staffMenuBtn', 'click', () => $('#staffSidebar').classList.add('open'));
+        on('#adminMenuBtn', 'click', () => $('#adminSidebar').classList.add('open'));
 
-        if (customerMenuBtn) customerMenuBtn.addEventListener('click', () => $('.topbar-nav').classList.toggle('mobile-open'));
-        if (staffMenuBtn) staffMenuBtn.addEventListener('click', () => $('#staffSidebar').classList.add('open'));
-        if (adminMenuBtn) adminMenuBtn.addEventListener('click', () => $('#adminSidebar').classList.add('open'));
+        on('#closeStaffSidebar', 'click', () => $('#staffSidebar').classList.remove('open'));
+        on('#closeAdminSidebar', 'click', () => $('#adminSidebar').classList.remove('open'));
 
-        // Sidebar close buttons
-        const closeStaffSidebar = $('#closeStaffSidebar');
-        const closeAdminSidebar = $('#closeAdminSidebar');
-        if (closeStaffSidebar) closeStaffSidebar.addEventListener('click', () => $('#staffSidebar').classList.remove('open'));
-        if (closeAdminSidebar) closeAdminSidebar.addEventListener('click', () => $('#adminSidebar').classList.remove('open'));
-
-        // Close sidebars on nav link click
         $$('.sidebar .nav-link').forEach(link => {
             link.addEventListener('click', () => {
-                $('#staffSidebar').classList.remove('open');
-                $('#adminSidebar').classList.remove('open');
+                if ($('#staffSidebar')) $('#staffSidebar').classList.remove('open');
+                if ($('#adminSidebar')) $('#adminSidebar').classList.remove('open');
             });
         });
 
-        // Modal close on overlay click
-        $('#modalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
+        on('#modalOverlay', 'click', (e) => { if (e.target === e.currentTarget) closeModal(); });
 
-        // Init reservation form
+        // Start initialization
         initReservationForm();
-
-        // Load home data
         loadRestaurantInfo();
 
-        // Request notification permission
         if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
             Notification.requestPermission();
         }
 
-        // Handle hash routing
         const hash = window.location.hash.replace('#', '') || 'home';
         navigateTo(hash);
 
-        // SSE
-        setupRealtimeUpdates();
+        // SSE MUST BE LAST AND SAFE
+        try {
+            setupRealtimeUpdates();
+        } catch (e) {
+            console.error('SSE initialization failed:', e);
+        }
 
         console.log('🍽️ Restaurant Reservation System initialized');
     }
