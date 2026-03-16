@@ -553,7 +553,7 @@
             const upcoming = todayRes.filter(r => r.status === 'confirmed');
             $('#arrivalsCount').textContent = upcoming.length;
             $('#upcomingArrivals').innerHTML = upcoming.length > 0 ? upcoming.slice(0, 8).map(r => `
-        <div class="flex-between mb-3" style="padding:var(--sp-3);background:var(--color-bg-secondary);border-radius:var(--radius-md);">
+        <div class="flex-between mb-3 reservation-row" data-id="${r.id}" style="padding:var(--sp-3);background:var(--color-bg-secondary);border-radius:var(--radius-md);">
           <div class="flex gap-3" style="align-items:center;">
             <div class="avatar">${(r.customer_name || '?')[0]}</div>
             <div>
@@ -720,7 +720,7 @@
             }
 
             list.innerHTML = reservations.map(r => `
-        <div class="reservation-row" onclick="window._showReservationDetail('${r.id}')">
+        <div class="reservation-row" data-id="${r.id}" onclick="window._showReservationDetail('${r.id}')">
           <span style="font-weight:var(--fw-semibold);">${formatTime(r.reservation_time)}</span>
           <div>
             <div style="font-weight:var(--fw-medium);">${r.customer_name || 'Unknown'}</div>
