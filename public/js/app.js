@@ -93,32 +93,18 @@
 
     // ── Navigation ──
     function navigateTo(page) {
+        // Show/hide level (customer/staff/admin)
         if (page === 'staff') {
             if (!AUTH.staff) { showLoginModal('staff', () => navigateTo('staff')); return; }
             switchApp('staff');
-            return;
-        }
-        if (page === 'admin') {
+        } else if (page === 'admin') {
             if (!AUTH.admin) { showLoginModal('admin', () => navigateTo('admin')); return; }
             switchApp('admin');
-            return;
-        }
-        if (page === 'home' || page === 'reserve' || page === 'my-reservations' || page === 'confirm') {
+        } else {
             switchApp('customer');
-            $$('.page-view').forEach(p => p.classList.remove('active'));
-            $$('.topbar-link').forEach(l => l.classList.remove('active'));
-            const target = $('#page-' + page);
-            if (target) target.classList.add('active');
-            const link = $(`.topbar-link[data-nav="${page}"]`);
-            if (link) link.classList.add('active');
-
-            // Close mobile menu on navigate
-            $('.topbar-nav').classList.remove('mobile-open');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
         }
 
-        // Show/hide customer pages
+        // Show/hide specific views
         $$('.page-view').forEach(p => p.classList.remove('active'));
         const target = $(`#page-${page}`) || $(`#staff-${page}`) || $(`#admin-${page}`);
         if (target) {
@@ -132,7 +118,21 @@
         $$('[data-nav]').forEach(l => l.classList.remove('active'));
         $$(`[data-nav="${page}"]`).forEach(l => l.classList.add('active'));
 
-        window.location.hash = page;
+        // Handle path update without reload
+        const path = page === 'home' ? '/' : '/' + page;
+        if (window.location.pathname !== path) {
+            window.history.pushState({ page }, '', path);
+        }
+
+        // Sidebar close handling
+        if (currentApp === 'customer') {
+            $('.topbar-nav').classList.remove('mobile-open');
+        } else {
+            $('#staffSidebar')?.classList.remove('open');
+            $('#adminSidebar')?.classList.remove('open');
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function showLoginModal(role, onSuccess) {
@@ -1224,7 +1224,21 @@
         // Navigation (Delegated)
         document.addEventListener('click', (e) => {
             const navBtn = e.target.closest('[data-nav]');
-            if (navBtn) { navigateTo(navBtn.dataset.nav); return; }
+            if (navBtn) {
+                e.preventDefault();
+                navigateTo(navBtn.dataset.nav);
+                return;
+            }
+
+            const anchor = e.target.closest('a');
+            if (anchor && anchor.href.startsWith(window.location.origin)) {
+                const path = anchor.getAttribute('href');
+                if (path && path.startsWith('/') && !path.includes('.')) {
+                    e.preventDefault();
+                    navigateTo(path.replace('/', '') || 'home');
+                    return;
+                }
+            }
 
             const staffNav = e.target.closest('[data-staff-nav]');
             if (staffNav) { handleStaffNav(staffNav.dataset.staffNav); return; }
@@ -1298,6 +1312,12 @@
 
         on('#modalOverlay', 'click', (e) => { if (e.target === e.currentTarget) closeModal(); });
 
+        // Browser back/forward
+        window.addEventListener('popstate', (e) => {
+            const page = e.state?.page || 'home';
+            navigateTo(page);
+        });
+
         // Start initialization
         initReservationForm();
         loadRestaurantInfo();
@@ -1306,8 +1326,9 @@
             Notification.requestPermission();
         }
 
-        const hash = window.location.hash.replace('#', '') || 'home';
-        navigateTo(hash);
+        // Parse path instead of hash
+        const path = window.location.pathname.replace('/', '') || 'home';
+        navigateTo(path);
 
         // SSE MUST BE LAST AND SAFE
         try {
