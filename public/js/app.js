@@ -1112,9 +1112,9 @@
         API.connectSync();
 
         API.on('reservation_created', (data) => {
+            console.log('🔔 Notification received:', data);
             unreadCount++;
             updateNotificationBadge();
-            playNotificationSound();
             addNotificationToList(data);
 
             showToast('New Reservation', `<strong>${data.customer_name}</strong> – ${data.party_size} guests at ${formatTime(data.reservation_time)}`, 'info');

@@ -70,7 +70,13 @@ app.get('/api/events', (req, res) => {
     sseClients.add(res);
     console.log(`📡 SSE client connected (${sseClients.size} total)`);
 
+    // Keep connection alive with heartbeats
+    const heartbeat = setInterval(() => {
+        res.write(': heartbeat\n\n');
+    }, 30000);
+
     req.on('close', () => {
+        clearInterval(heartbeat);
         sseClients.delete(res);
         console.log(`📡 SSE client disconnected (${sseClients.size} total)`);
     });

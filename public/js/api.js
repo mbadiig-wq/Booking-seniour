@@ -87,8 +87,10 @@ const API = {
         const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.ENV || {};
 
         if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+            console.log('📡 Using Supabase for real-time');
             this.connectSupabase(SUPABASE_URL, SUPABASE_ANON_KEY);
         } else {
+            console.log('📡 Using local SSE for real-time');
             this.connectSSE();
         }
     },
