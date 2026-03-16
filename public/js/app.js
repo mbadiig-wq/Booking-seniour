@@ -737,7 +737,7 @@
         }
     }
 
-    async function exportReservationsToExcel() {
+    async function exportReservationsToPDF() {
         const date = $('#resListDate').value || getToday();
         const status = $('#resListFilter').value;
         const filters = { date };
@@ -750,48 +750,42 @@
                 return;
             }
 
-            // Generate CSV
-            const headers = ['Time', 'Date', 'Customer Name', 'Phone', 'Email', 'Guests', 'Table', 'Location', 'Status', 'Special Requests'];
-            const rows = reservations.map(r => [
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(196, 160, 82); // Gold color
+            doc.text('Al Seniour Reservations', 14, 22);
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Date: ${formatDate(date)} | Filter: ${status || 'All'}`, 14, 30);
+
+            // Table
+            const head = [['Time', 'Customer', 'Phone', 'Guests', 'Table', 'Status']];
+            const body = reservations.map(r => [
                 formatTime(r.reservation_time),
-                r.reservation_date,
                 r.customer_name,
                 r.customer_phone || '',
-                r.customer_email || '',
                 r.party_size,
-                r.table_number || 'Unassigned',
-                r.table_location || '',
-                r.status,
-                (r.special_requests || '').replace(/"/g, '""')
+                r.table_number ? `T${r.table_number}` : '—',
+                r.status.toUpperCase()
             ]);
 
-            const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.map(val => `"${val}"`).join(','))
-            ].join('\n');
+            doc.autoTable({
+                head: head,
+                body: body,
+                startY: 40,
+                styles: { fontSize: 9, cellPadding: 3 },
+                headStyles: { fillColor: [196, 160, 82], textColor: [255, 255, 255] },
+                alternateRowStyles: { fillColor: [248, 248, 248] },
+                margin: { top: 40 }
+            });
 
-            // Add BOM for Excel UTF-8 compatibility and use robust download pattern
-            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `reservations_${date}.csv`;
-
-            // Required for Firefox and some Chrome configurations
-            link.style.display = 'none';
-            document.body.appendChild(link);
-
-            link.click();
-
-            // Delay cleanup to ensure browser processes the download
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 100);
-
-            showToast('Success', 'Reservations exported successfully', 'success');
+            doc.save(`reservations_${date}.pdf`);
+            showToast('Success', 'PDF exported successfully', 'success');
         } catch (e) {
-            showToast('Error', 'Export failed: ' + e.message, 'error');
+            showToast('Error', 'PDF export failed: ' + e.message, 'error');
         }
     }
 
@@ -1190,7 +1184,7 @@
         else if (savedPhone) $('#lookupField').value = savedPhone;
 
         // Staff
-        $('#exportResExcel').addEventListener('click', exportReservationsToExcel);
+        $('#exportResPDF').addEventListener('click', exportReservationsToPDF);
         $('#staffNewBooking').addEventListener('click', showNewBookingModal);
         $('#resListDate').addEventListener('change', loadReservationsList);
         $('#resListFilter').addEventListener('change', loadReservationsList);
