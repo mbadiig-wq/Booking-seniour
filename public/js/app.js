@@ -296,10 +296,8 @@
         container.innerHTML = '';
         const slots = [];
         for (let h = 8; h <= 23; h++) {
-            for (let m = 0; m < 60; m += 30) {
-                const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-                slots.push(time);
-            }
+            const time = `${String(h).padStart(2, '0')}:00`;
+            slots.push(time);
         }
         slots.forEach(time => {
             const btn = document.createElement('button');
