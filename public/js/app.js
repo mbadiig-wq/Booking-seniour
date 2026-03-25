@@ -716,9 +716,10 @@
         const status = $('#resListFilter') ? $('#resListFilter').value : '';
         const name = $('#resSearchName') ? $('#resSearchName').value.trim() : '';
 
-        // Build filters – no date means ALL reservations
+        // Build filters – no date means upcoming reservations
         const filters = {};
         if (date) filters.date = date;
+        else filters.upcoming = 'true';
         if (status) filters.status = status;
         if (name) filters.customer_name = name;
 
