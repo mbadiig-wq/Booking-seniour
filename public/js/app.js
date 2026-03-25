@@ -709,6 +709,9 @@
     // STAFF: Reservations List
     // ═══════════════════════════════
     async function loadReservationsList() {
+        // Guard: Only fetch if authenticated as staff or admin
+        if (!AUTH.staff && !AUTH.admin) return;
+
         const date = $('#resListDate') ? $('#resListDate').value : '';
         const status = $('#resListFilter') ? $('#resListFilter').value : '';
         const name = $('#resSearchName') ? $('#resSearchName').value.trim() : '';
