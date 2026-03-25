@@ -7,7 +7,7 @@ const { getDb } = require('../db/database');
 // GET /api/reservations – List all (Staff only)
 router.get('/', auth('staff'), async (req, res) => {
     const db = getDb();
-    const { date, status, customer_id, upcoming } = req.query;
+    const { date, status, customer_id, customer_name, upcoming } = req.query;
 
     let query = `
       SELECT r.*, c.name as customer_name, c.phone as customer_phone, c.email as customer_email,
@@ -22,6 +22,10 @@ router.get('/', auth('staff'), async (req, res) => {
     if (date) { conditions.push('r.reservation_date = ?'); params.push(date); }
     if (status) { conditions.push('r.status = ?'); params.push(status); }
     if (customer_id) { conditions.push('r.customer_id = ?'); params.push(customer_id); }
+    if (customer_name) {
+        conditions.push('c.name LIKE ?');
+        params.push(`%${customer_name}%`);
+    }
     if (upcoming === 'true') {
         if (process.env.NODE_ENV === 'production') {
             conditions.push("r.reservation_date >= CURRENT_DATE");

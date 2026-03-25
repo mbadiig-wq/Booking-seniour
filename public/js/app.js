@@ -709,93 +709,135 @@
     // STAFF: Reservations List
     // ═══════════════════════════════
     async function loadReservationsList() {
-        const date = $('#resListDate').value || getToday();
-        const status = $('#resListFilter').value;
-        const filters = { date };
+        const date = $('#resListDate') ? $('#resListDate').value : '';
+        const status = $('#resListFilter') ? $('#resListFilter').value : '';
+        const name = $('#resSearchName') ? $('#resSearchName').value.trim() : '';
+
+        // Build filters – no date means ALL reservations
+        const filters = {};
+        if (date) filters.date = date;
         if (status) filters.status = status;
+        if (name) filters.customer_name = name;
 
         try {
             const reservations = await API.getReservations(filters);
-            $('#resListCount').textContent = `${reservations.length} reservation(s)`;
 
-            const list = $('#reservationsList');
+            // ── Stats ──
+            const totalGuests = reservations.reduce((s, r) => s + (r.party_size || 0), 0);
+            const totalConfirmed = reservations.filter(r => r.status === 'confirmed').length;
+            const totalSeated = reservations.filter(r => r.status === 'seated').length;
+            if ($('#resStatCount')) $('#resStatCount').textContent = reservations.length;
+            if ($('#resStatGuests')) $('#resStatGuests').textContent = totalGuests;
+            if ($('#resStatConfirmed')) $('#resStatConfirmed').textContent = totalConfirmed;
+            if ($('#resStatSeated')) $('#resStatSeated').textContent = totalSeated;
+
+            const tbody = $('#reservationsList');
+            const empty = $('#resEmptyState');
+            const tableEl = $('#resTableEl');
+
+            if (!tbody) return;
+
             if (reservations.length === 0) {
-                list.innerHTML = '<div class="empty-state" style="padding:var(--sp-8);"><p class="text-muted">No reservations found</p></div>';
+                tbody.innerHTML = '';
+                if (tableEl) tableEl.style.display = 'none';
+                if (empty) empty.classList.remove('hidden');
                 return;
             }
 
-            list.innerHTML = reservations.map(r => `
-        <div class="reservation-row" data-id="${r.id}" onclick="window._showReservationDetail('${r.id}')">
-          <span style="font-weight:var(--fw-semibold);">${formatTime(r.reservation_time)}</span>
-          <div>
-            <div style="font-weight:var(--fw-medium);">${r.customer_name || 'Unknown'}</div>
-            <div style="font-size:var(--fs-xs);color:var(--color-text-muted);">${r.customer_phone || ''}</div>
-          </div>
-          <span>👥 ${r.party_size}</span>
-          <span>Table ${r.table_number || '—'}</span>
-          ${getStatusBadge(r.status)}
-          <div class="flex gap-2">
-            ${r.status === 'confirmed' ? `<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();window._seatGuest('${r.id}')">Seat</button>` : ''}
-            ${r.status === 'seated' ? `<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();window._completeGuest('${r.id}')">Done</button>` : ''}
-          </div>
-        </div>
-      `).join('');
+            if (tableEl) tableEl.style.display = '';
+            if (empty) empty.classList.add('hidden');
+
+            tbody.innerHTML = reservations.map(r => `
+              <tr class="reservation-row" data-id="${r.id}" style="cursor:pointer;"
+                  onclick="window._showReservationDetail('${r.id}')">
+                <td>${formatDate(r.reservation_date)}</td>
+                <td style="font-weight:var(--fw-semibold);">${formatTime(r.reservation_time)}</td>
+                <td style="font-weight:var(--fw-medium);">${r.customer_name || '—'}</td>
+                <td style="color:var(--color-text-muted);">${r.customer_phone || '—'}</td>
+                <td>👥 ${r.party_size}</td>
+                <td>${r.table_number ? 'T' + r.table_number : '—'}</td>
+                <td>${getStatusBadge(r.status)}</td>
+                <td onclick="event.stopPropagation();" class="flex gap-2" style="gap:6px;">
+                  ${r.status === 'confirmed'
+                    ? `<button class="btn btn-sm btn-primary" onclick="window._seatGuest('${r.id}')">Seat</button>` : ''}
+                  ${r.status === 'seated'
+                    ? `<button class="btn btn-sm btn-secondary" onclick="window._completeGuest('${r.id}')">Done</button>` : ''}
+                  <button class="btn btn-sm btn-ghost" onclick="window._showReservationDetail('${r.id}')">View</button>
+                </td>
+              </tr>
+            `).join('');
         } catch (e) {
             showToast('Error', 'Failed to load reservations: ' + e.message, 'error');
         }
     }
 
     async function exportReservationsToPDF() {
-        const date = $('#resListDate').value || getToday();
-        const status = $('#resListFilter').value;
-        const filters = { date };
+        const date = $('#resListDate') ? $('#resListDate').value : '';
+        const status = $('#resListFilter') ? $('#resListFilter').value : '';
+        const name = $('#resSearchName') ? $('#resSearchName').value.trim() : '';
+
+        const filters = {};
+        if (date) filters.date = date;
         if (status) filters.status = status;
+        if (name) filters.customer_name = name;
 
         try {
             const reservations = await API.getReservations(filters);
             if (reservations.length === 0) {
-                showToast('Export', 'No reservations to export for this date', 'warning');
+                showToast('Export', 'No reservations match the current filters', 'warning');
                 return;
             }
 
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF({ orientation: 'landscape' });
 
-            // Header
+            // Title
             doc.setFontSize(20);
-            doc.setTextColor(196, 160, 82); // Gold color
-            doc.text('Al Seniour Reservations', 14, 22);
-            doc.setFontSize(11);
+            doc.setTextColor(196, 160, 82);
+            doc.text('Al Seniour – Reservations', 14, 20);
+
+            // Subtitle with active filters
+            doc.setFontSize(10);
             doc.setTextColor(100);
-            doc.text(`Date: ${formatDate(date)} | Filter: ${status || 'All'}`, 14, 30);
+            const filterLine = [
+                date ? `Date: ${formatDate(date)}` : 'All dates',
+                status ? `Status: ${status}` : 'All statuses',
+                name ? `Client: "${name}"` : ''
+            ].filter(Boolean).join('  |  ');
+            doc.text(filterLine, 14, 28);
+
+            const totalGuests = reservations.reduce((s, r) => s + (r.party_size || 0), 0);
+            doc.text(`${reservations.length} reservations  –  ${totalGuests} guests total`, 14, 35);
 
             // Table
-            const head = [['Time', 'Customer', 'Phone', 'Guests', 'Table', 'Status']];
-            const body = reservations.map(r => [
-                formatTime(r.reservation_time),
-                r.customer_name,
-                r.customer_phone || '',
-                r.party_size,
-                r.table_number ? `T${r.table_number}` : '—',
-                r.status.toUpperCase()
-            ]);
-
             doc.autoTable({
-                head: head,
-                body: body,
-                startY: 40,
-                styles: { fontSize: 9, cellPadding: 3 },
-                headStyles: { fillColor: [196, 160, 82], textColor: [255, 255, 255] },
-                alternateRowStyles: { fillColor: [248, 248, 248] },
-                margin: { top: 40 }
+                head: [['Date', 'Time', 'Client', 'Phone', 'Email', 'Guests', 'Table', 'Status', 'Requests']],
+                body: reservations.map(r => [
+                    r.reservation_date,
+                    formatTime(r.reservation_time),
+                    r.customer_name || '—',
+                    r.customer_phone || '—',
+                    r.customer_email || '—',
+                    r.party_size,
+                    r.table_number ? `T${r.table_number}` : '—',
+                    r.status.toUpperCase(),
+                    r.special_requests || '—'
+                ]),
+                startY: 42,
+                styles: { fontSize: 8, cellPadding: 2.5 },
+                headStyles: { fillColor: [196, 160, 82], textColor: [255, 255, 255], fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [250, 248, 244] },
+                margin: { left: 14, right: 14 }
             });
 
-            doc.save(`reservations_${date}.pdf`);
-            showToast('Success', 'PDF exported successfully', 'success');
+            const filename = `reservations${date ? '_' + date : ''}.pdf`;
+            doc.save(filename);
+            showToast('Success', `PDF exported – ${reservations.length} reservation(s)`, 'success');
         } catch (e) {
             showToast('Error', 'PDF export failed: ' + e.message, 'error');
         }
     }
+
 
     window._showReservationDetail = async function (id) {
         try {
@@ -1287,6 +1329,13 @@
         on('#staffNewBooking', 'click', showNewBookingModal);
         on('#resListDate', 'change', loadReservationsList);
         on('#resListFilter', 'change', loadReservationsList);
+        // Real-time search – debounced 350ms
+        let _searchTimer;
+        const searchInput = $('#resSearchName');
+        if (searchInput) searchInput.addEventListener('input', () => {
+            clearTimeout(_searchTimer);
+            _searchTimer = setTimeout(loadReservationsList, 350);
+        });
         on('#floorFilter', 'change', loadFloorMap);
         on('#addToWaitlist', 'click', showAddToWaitlistModal);
 
